@@ -1,94 +1,276 @@
-body {
+/* ============================================================
+   Movie Watchlist — Milestone 3 Styles
+   ============================================================ */
+
+/* ── Reset & Base ── */
+*, *::before, *::after {
+    box-sizing: border-box;
     margin: 0;
-    font-family: Arial, sans-serif;
-    color: white;
-    
-    background: url("background.jpeg") no-repeat center center/cover;
-    background-attachment: fixed;
+    padding: 0;
+}
+
+body {
     font-family: 'Poppins', sans-serif;
-    height: 100vh;
+    color: #fff;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
-}
-.search-box {
-    margin: 20px;
+    padding-bottom: 60px;
+
+    background: url("background.jpeg") no-repeat center center / cover;
+    background-attachment: fixed;
 }
 
-input {
-    padding: 10px;
-    width: 250px;
-}
-
-button {
-    padding: 10px;
-    cursor: pointer;
-}
-
-.movie {
-    background: #1e1e1e;
-    margin: 15px;
-    padding: 15px;
-    border-radius: 10px;
-}
-
+/* Dark overlay so text is always readable */
 body::before {
     content: "";
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    
-    background: rgba(0, 0, 0, 0.75);
-    
+    inset: 0;
+    background: rgba(10, 10, 20, 0.78);
     z-index: -1;
 }
-.main-container {
+
+/* ── Header ── */
+header {
+    text-align: center;
+    padding: 40px 20px 10px;
+}
+
+h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-shadow: 0 0 20px rgba(255,255,255,0.25);
+}
+
+.subtitle {
+    color: rgba(255,255,255,0.55);
+    font-size: 0.9rem;
+    margin-top: 6px;
+}
+
+/* ── Search Box ── */
+.search-box {
+    display: flex;
+    gap: 10px;
+    margin: 28px 16px 0;
+    width: min(560px, 90vw);
+}
+
+.search-box input {
+    flex: 1;
+    padding: 12px 18px;
+    border-radius: 50px;
+    border: 2px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+    font-family: inherit;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.25s;
+}
+
+.search-box input:focus {
+    border-color: #e50914;
+}
+
+.search-box input::placeholder {
+    color: rgba(255,255,255,0.4);
+}
+
+#searchBtn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 50px;
+    background: #e50914;
+    color: #fff;
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+}
+
+#searchBtn:hover  { background: #ff1a26; transform: scale(1.04); }
+#searchBtn:active { transform: scale(0.98); }
+
+/* ── Tabs ── */
+.tabs {
+    display: flex;
+    gap: 8px;
+    margin: 28px 0 0;
+}
+
+.tab {
+    padding: 10px 22px;
+    border-radius: 50px;
+    border: 2px solid rgba(255,255,255,0.18);
+    background: transparent;
+    color: rgba(255,255,255,0.65);
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.tab:hover  { border-color: rgba(255,255,255,0.45); color: #fff; }
+.tab.active {
+    background: #e50914;
+    border-color: #e50914;
+    color: #fff;
+}
+
+/* ── Badge (watchlist count) ── */
+.badge {
+    background: rgba(0,0,0,0.35);
+    border-radius: 50px;
+    padding: 1px 8px;
+    font-size: 0.75rem;
+}
+
+/* ── Controls (filter / sort) ── */
+.controls {
     display: flex;
     gap: 20px;
-    background: rgba(0, 0, 0, 0.6);
-    padding: 20px;
-    border-radius: 10px;
+    margin: 20px 16px 0;
+    flex-wrap: wrap;
+    justify-content: center;
 }
-h1 {
-    font-size: 40px;
+
+.controls.hidden { display: none; }
+
+.control-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.88rem;
+    color: rgba(255,255,255,0.75);
+}
+
+.control-group select {
+    padding: 7px 12px;
+    border-radius: 8px;
+    border: 1.5px solid rgba(255,255,255,0.18);
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+    font-family: inherit;
+    font-size: 0.88rem;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.control-group select:focus { border-color: #e50914; }
+.control-group select option { background: #1a1a2e; }
+
+/* ── Movie Grid ── */
+.movies-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    padding: 28px 16px 0;
+    max-width: 1100px;
+    width: 100%;
+}
+
+.movies-grid.hidden { display: none; }
+
+/* ── Movie Card ── */
+.movie-card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 14px;
+    width: 165px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.22s, box-shadow 0.22s;
+    backdrop-filter: blur(6px);
+}
+
+.movie-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 14px 36px rgba(0,0,0,0.55);
+}
+
+.movie-card img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    display: block;
+}
+
+.card-info {
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+}
+
+.card-info h3 {
+    font-size: 0.82rem;
     font-weight: 600;
-    letter-spacing: 1px;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+    line-height: 1.35;
+    /* clamp long titles to 2 lines */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
-.movie h3 {
-    font-size: 16px;
-    font-weight: 500;
-}
-body {
-    margin: 0;
-    font-family: 'Poppins', sans-serif;
-    color: white;
-}
-body::before {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
 
-    background: url("background.jpg") no-repeat center center/cover;
-    
-    filter: blur(4px);  
-    
-    z-index: -2;
+.year {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.55);
 }
-body::after {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
 
-    background: rgba(0, 0, 0, 0.5);
-    
-    z-index: -1;
+/* ── Type badge (movie / series) ── */
+.badge-type {
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 8px;
+    border-radius: 50px;
+    width: fit-content;
 }
+
+.badge-type.movie  { background: rgba(229,9,20,0.28);  color: #ff6b6b; border: 1px solid rgba(229,9,20,0.5); }
+.badge-type.series { background: rgba(58,123,253,0.25); color: #7badff; border: 1px solid rgba(58,123,253,0.45); }
+
+/* ── Watchlist button ── */
+.btn-watchlist {
+    margin-top: auto;
+    padding: 7px 0;
+    width: 100%;
+    border-radius: 8px;
+    border: none;
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    font-family: inherit;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+}
+
+.btn-watchlist:hover  { background: #e50914; transform: scale(1.03); }
+.btn-watchlist.added  { background: rgba(255,255,255,0.18); }
+.btn-watchlist.added:hover { background: #b00008; }
+
+/* ── Status messages ── */
+.status-msg {
+    color: rgba(255,255,255,0.6);
+    font-size: 0.95rem;
+    text-align: center;
+    padding: 40px 0;
+    width: 100%;
+}
+
+.status-msg.error { color: #ff6b6b; }

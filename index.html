@@ -1,21 +1,68 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>Movie Watchlist</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎬 BingeBox</title>
+    <meta name="description" content="Search movies, add to your watchlist, filter and sort results.">
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
 
-    <h1>🎬 Movie Watchlist 🎬</h1>
+    <header>
+        <h1>🎬 BingeBox</h1>
+        <p class="subtitle">Your personal binge-watching hub</p>
+    </header>
 
+    <!-- ── Search Bar ── -->
     <div class="search-box">
-        <input type="text" id="searchInput" placeholder="Search movies...">
-        <button onclick="searchMovies()">Search</button>
+        <input type="text" id="searchInput" placeholder="Search movies or series…"
+            onkeydown="if(event.key==='Enter') searchMovies()">
+        <button id="searchBtn" onclick="searchMovies()">Search</button>
     </div>
 
-    <div id="moviesContainer"></div>
+    <!-- ── Tab Navigation ── -->
+    <div class="tabs">
+        <button class="tab active" id="tabSearch" onclick="switchTab('search')">🔍 Results</button>
+        <button class="tab" id="tabWatchlist" onclick="switchTab('watchlist')">❤️ Watchlist <span id="watchlistCount"
+                class="badge">0</span></button>
+    </div>
+
+
+    <div class="controls" id="controls">
+
+        <!-- Filter by type -->
+        <div class="control-group">
+            <label for="filterType">Filter by type:</label>
+            <select id="filterType" onchange="applyControls()">
+                <option value="all">All</option>
+                <option value="movie">Movies</option>
+                <option value="series">Series</option>
+            </select>
+        </div>
+
+        <!-- Sort by year -->
+        <div class="control-group">
+            <label for="sortOrder">Sort by year:</label>
+            <select id="sortOrder" onchange="applyControls()">
+                <option value="none">Default</option>
+                <option value="asc">Oldest first ↑</option>
+                <option value="desc">Newest first ↓</option>
+            </select>
+        </div>
+
+    </div>
+
+    <!-- ── Movie Grid ── -->
+    <div id="moviesContainer" class="movies-grid"></div>
+
+    <!-- ── Watchlist Grid ── -->
+    <div id="watchlistContainer" class="movies-grid hidden"></div>
 
     <script src="script.js"></script>
 </body>
+
 </html>
