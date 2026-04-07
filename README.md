@@ -1,4 +1,4 @@
-# Movie Watchlist Web App
+# BingeBox Web App
 
 ## 📌 Description
 This project is a web application that allows users to search for movies and create a personalized watchlist. It uses the OMDb API to fetch real-time movie data and display it dynamically.
