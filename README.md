@@ -1,15 +1,16 @@
-# BingeBox Web App
+# BingeBox – Movie Watchlist App
 
 ## 📌 Description
-This project is a web application that allows users to search for movies and create a personalized watchlist. It uses the OMDb API to fetch real-time movie data and display it dynamically.
+BingeBox is a web application that allows users to search for movies and manage a personalized watchlist. It uses the OMDb API to fetch real-time movie data and displays it in a modern, responsive UI.
 
-Users can search movies, view results, and add or remove movies from their watchlist. The application focuses on providing a smooth and interactive user experience.
-
-## 🎯 Features 
-- Live movie search using OMDb API
-- Add/remove movies from watchlist
-- Sorting and filtering options
-- Responsive dark-themed UI
+## 🚀 Features
+- 🔍 Live movie search using OMDb API
+- 🎬 Dynamic display of movie results
+- ❤️ Add/remove movies from watchlist
+- 💾 Persistent storage using localStorage
+- 🔽 Sorting movies by year (ascending/descending)
+- 🎛️ Filtering by type (movie/series)
+- 🌙 Dark themed UI with cinematic background
 
 ## 🛠️ Technologies Used
 - HTML
@@ -18,8 +19,18 @@ Users can search movies, view results, and add or remove movies from their watch
 - Fetch API
 - OMDb API
 
-## 🚀 Setup Instructions
-1. Clone the repository
-2. Open index.html in browser
-3. Add your OMDb API key in script.js
+## 📷 How to Use
+1. Enter a movie name in the search bar
+2. Click search or press Enter
+3. Browse results
+4. Add movies to your watchlist
+5. Sort or filter results as needed
 
+## 🌐 Live Demo
+https://movie-watchlist-woad-seven.vercel.app/
+
+## 📅 Milestone Status
+- Milestone 1: Completed ✅
+- Milestone 2: Completed ✅
+- Milestone 3: Completed ✅
+- Milestone 4: Completed ✅
