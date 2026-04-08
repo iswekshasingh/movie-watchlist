@@ -11,6 +11,53 @@ const API_KEY = "9d8c7133";
 // All sort/filter operations work ON THIS ARRAY (never mutate it).
 let searchResults = [];
 
+// ── Genre Config ─────────────────────────────────────────────
+const HOMEPAGE_GENRES = [
+    { name: "Action",  query: "action",  emoji: "🔥" },
+    { name: "Comedy",  query: "comedy",  emoji: "😂" },
+    { name: "Horror",  query: "horror",  emoji: "👻" },
+    { name: "Drama",   query: "drama",   emoji: "🎭" }
+];
+
+// ── Theme Management ──────────────────────────────────────────
+
+/**
+ * Initializes theme from localStorage or system preference.
+ */
+function initTheme() {
+    const savedTheme = localStorage.getItem("theme") || "dark";
+    applyTheme(savedTheme);
+}
+
+/**
+ * Toggles theme between light and dark.
+ */
+function toggleTheme() {
+    const currentTheme = document.body.getAttribute("data-theme") || "dark";
+    const newTheme     = currentTheme === "dark" ? "light" : "dark";
+    applyTheme(newTheme);
+}
+
+/**
+ * Applies the theme to the DOM and saves to localStorage.
+ * @param {string} theme - 'light' | 'dark'
+ */
+function applyTheme(theme) {
+    document.body.setAttribute("data-theme", theme);
+    localStorage.setItem("theme", theme);
+
+    const icon = document.querySelector("#themeToggle .toggle-icon");
+    const text = document.querySelector("#themeText");
+
+    if (theme === "light") {
+        icon.textContent = "☀️";
+        text.textContent = "Light Mode";
+    } else {
+        icon.textContent = "🌙";
+        text.textContent = "Dark Mode";
+    }
+}
+
 // ── localStorage helpers ──────────────────────────────────────
 // Always parse/stringify when reading from / writing to localStorage.
 
@@ -155,6 +202,91 @@ async function searchMovies() {
     }
 }
 
+// ── Genre Sections ───────────────────────────────────────────
+
+/**
+ * Fetches movies for all genres in the HOMEPAGE_GENRES config.
+ * Uses Promise.all to fetch in parallel.
+ */
+async function loadGenreSections() {
+    const container = document.getElementById("genreSections");
+
+    // Render skeleton loaders immediately for better UX
+    container.innerHTML = HOMEPAGE_GENRES.map(genre => `
+        <div class="genre-section">
+            <div class="genre-section-header">
+                <span class="genre-emoji">${genre.emoji}</span>
+                <h2>${genre.name}</h2>
+            </div>
+            <div class="genre-row">
+                ${Array(6).fill('<div class="skeleton-card"></div>').join("")}
+            </div>
+        </div>
+    `).join("");
+
+    try {
+        // Fetch all genres in parallel using .map() + Promise.all
+        const genreData = await Promise.all(
+            HOMEPAGE_GENRES.map(async (genre) => {
+                const res = await fetch(`https://www.omdbapi.com/?s=${genre.query}&type=movie&apikey=${API_KEY}`);
+                const data = await res.json();
+                return { ...genre, movies: data.Search?.slice(0, 8) || [] };
+            })
+        );
+
+        // Render the actual content
+        renderGenreSections(genreData);
+
+    } catch (error) {
+        console.error("Genre fetch error:", error);
+        container.innerHTML = `<p class="status-msg">Failed to load curated categories.</p>`;
+    }
+}
+
+/**
+ * Renders the fetched genre data into horizontal scroll rows.
+ * @param {Array} genresWithMovies
+ */
+function renderGenreSections(genresWithMovies) {
+    const container = document.getElementById("genreSections");
+    const list = getWatchlist();
+
+    container.innerHTML = genresWithMovies.map(genre => `
+        <div class="genre-section">
+            <div class="genre-section-header">
+                <span class="genre-emoji">${genre.emoji}</span>
+                <h2>${genre.name}</h2>
+                <span class="genre-count">${genre.movies.length} titles</span>
+            </div>
+            <div class="genre-row">
+                ${genre.movies.length > 0 
+                    ? genre.movies.map(movie => {
+                        const inWatchlist = list.some(m => m.imdbID === movie.imdbID);
+                        const poster = movie.Poster !== "N/A" ? movie.Poster : "https://via.placeholder.com/150x220?text=No+Poster";
+                        
+                        return `
+                            <div class="movie-card">
+                                <img src="${poster}" alt="${movie.Title} poster" loading="lazy">
+                                <div class="card-info">
+                                    <h3>${movie.Title}</h3>
+                                    <p class="year">📅 ${movie.Year}</p>
+                                    <button
+                                        class="btn-watchlist ${inWatchlist ? 'added' : ''}"
+                                        onclick='toggleWatchlist(${JSON.stringify(movie)})'
+                                    >
+                                        ${inWatchlist ? '✅' : '➕'}
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    }).join("")
+                    : `<p class="genre-error">No movies found for this category.</p>`
+                }
+            </div>
+        </div>
+    `).join("");
+}
+
 // ── Render helpers ────────────────────────────────────────────
 // WHY .map()?  It transforms each movie object into an HTML string,
 // returning a new array we then .join("") into one big string.
@@ -220,20 +352,30 @@ function renderWatchlist() {
 function switchTab(tab) {
     const searchGrid    = document.getElementById("moviesContainer");
     const watchlistGrid = document.getElementById("watchlistContainer");
+    const genreSections = document.getElementById("genreSections");
     const controls      = document.getElementById("controls");
     const tabSearch     = document.getElementById("tabSearch");
     const tabWatchlist  = document.getElementById("tabWatchlist");
 
     if (tab === "search") {
-        searchGrid.classList.remove("hidden");
+        // If we have search results, show them. Otherwise show genre sections.
+        if (searchResults.length > 0) {
+            searchGrid.classList.remove("hidden");
+            genreSections.classList.add("hidden");
+            controls.classList.remove("hidden");
+        } else {
+            searchGrid.classList.add("hidden");
+            genreSections.classList.remove("hidden");
+            controls.classList.add("hidden");
+        }
         watchlistGrid.classList.add("hidden");
-        controls.classList.remove("hidden");
         tabSearch.classList.add("active");
         tabWatchlist.classList.remove("active");
     } else {
         searchGrid.classList.add("hidden");
+        genreSections.classList.add("hidden");
         watchlistGrid.classList.remove("hidden");
-        controls.classList.add("hidden");          // sort/filter don't apply to watchlist
+        controls.classList.add("hidden");
         tabSearch.classList.remove("active");
         tabWatchlist.classList.add("active");
         renderWatchlist();
@@ -246,7 +388,9 @@ function updateBadge() {
     document.getElementById("watchlistCount").textContent = getWatchlist().length;
 }
 
-// ── Init ──────────────────────────────────────────────────────
-// Run once on page load to show correct badge count
+// ── Init ──────────────────────────────────────────────
+// Run on page load
 
+initTheme();
 updateBadge();
+loadGenreSections();

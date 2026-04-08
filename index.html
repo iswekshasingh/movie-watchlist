@@ -15,6 +15,10 @@
     <header>
         <h1>🎬 BingeBox</h1>
         <p class="subtitle">Your personal binge-watching hub</p>
+        <button id="themeToggle" onclick="toggleTheme()">
+            <span class="toggle-icon">🌙</span>
+            <span id="themeText">Dark Mode</span>
+        </button>
     </header>
 
     <!-- ── Search Bar ── -->
@@ -56,8 +60,11 @@
 
     </div>
 
+    <!-- ── Genre Sections (Home) ── -->
+    <div id="genreSections"></div>
+
     <!-- ── Movie Grid ── -->
-    <div id="moviesContainer" class="movies-grid"></div>
+    <div id="moviesContainer" class="movies-grid hidden"></div>
 
     <!-- ── Watchlist Grid ── -->
     <div id="watchlistContainer" class="movies-grid hidden"></div>
